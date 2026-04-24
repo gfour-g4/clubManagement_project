@@ -87,23 +87,4 @@ public class AdhesionDAO {
             throw new RuntimeException("Erreur verification adhesion active", e);
         }
     }
-
-    public List<String> findActiveClubNamesByUser(int utilisateurId) {
-        List<String> clubNames = new ArrayList<>();
-        String sql = "SELECT c.nom FROM adhesions a " +
-                "JOIN clubs c ON c.id = a.club_id " +
-                "WHERE a.utilisateur_id = ? AND a.statut = 'ACTIF' ORDER BY c.nom";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, utilisateurId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    clubNames.add(rs.getString("nom"));
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur clubs actifs utilisateur", e);
-        }
-        return clubNames;
-    }
 }

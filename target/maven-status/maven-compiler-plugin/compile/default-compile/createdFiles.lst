@@ -1,7 +1,6 @@
 servlet/LogoutServlet.class
 servlet/ClubCreateServlet.class
 servlet/UserListServlet.class
-servlet/EventDetailServlet.class
 dao/ClubDAO.class
 servlet/DashboardServlet.class
 servlet/EventListServlet.class
@@ -22,7 +21,6 @@ servlet/LoginServlet.class
 model/InscriptionEvenement.class
 servlet/ClubDetailServlet.class
 dao/InscriptionEvenementDAO.class
-servlet/UserDetailServlet.class
 servlet/UserDeleteServlet.class
 servlet/ClubListServlet.class
 model/Utilisateur.class

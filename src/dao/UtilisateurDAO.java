@@ -43,22 +43,6 @@ public class UtilisateurDAO {
         return utilisateurs;
     }
 
-    public Utilisateur findById(int id) {
-        String sql = "SELECT * FROM utilisateurs WHERE id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return map(rs);
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur utilisateur par id", e);
-        }
-        return null;
-    }
-
     public List<Utilisateur> findByRole(String role) {
         List<Utilisateur> utilisateurs = new ArrayList<>();
         String sql = "SELECT * FROM utilisateurs WHERE role = ? ORDER BY nom_complet";

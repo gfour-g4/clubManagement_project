@@ -23,11 +23,6 @@ public class UserDeleteServlet extends BaseServlet {
             return;
         }
         utilisateurDAO.deleteById(id);
-        String redirectUserId = request.getParameter("redirectUserId");
-        if (redirectUserId != null && !redirectUserId.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/users?info=Utilisateur+supprime.");
-            return;
-        }
         response.sendRedirect(request.getContextPath() + "/users?info=Utilisateur+supprime.");
     }
 }

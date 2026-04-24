@@ -19,18 +19,14 @@ public class EventRegistrationServlet extends BaseServlet {
         Utilisateur user = getCurrentUser(request);
         int eventId = Integer.parseInt(request.getParameter("eventId"));
         String action = request.getParameter("action");
-        String redirectEventId = request.getParameter("redirectEventId");
-        String redirectBase = redirectEventId != null && !redirectEventId.trim().isEmpty()
-                ? request.getContextPath() + "/events/view?id=" + redirectEventId + "&tab=register&info="
-                : request.getContextPath() + "/events?info=";
         if ("register".equals(action)) {
             inscriptionDAO.register(eventId, user.getId());
-            response.sendRedirect(redirectBase + "Inscription+effectuee.");
+            response.sendRedirect(request.getContextPath() + "/events?info=Inscription+effectuee.");
         } else if ("cancel".equals(action)) {
             inscriptionDAO.cancel(eventId, user.getId());
-            response.sendRedirect(redirectBase + "Inscription+annulee.");
+            response.sendRedirect(request.getContextPath() + "/events?info=Inscription+annulee.");
         } else {
-            response.sendRedirect(redirectBase + "Action+invalide.");
+            response.sendRedirect(request.getContextPath() + "/events?info=Action+invalide.");
         }
     }
 }

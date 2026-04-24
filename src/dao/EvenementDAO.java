@@ -41,22 +41,6 @@ public class EvenementDAO {
         return evenements;
     }
 
-    public Evenement findById(int id) {
-        String sql = "SELECT * FROM evenements WHERE id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return map(rs);
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur evenement par id", e);
-        }
-        return null;
-    }
-
     public List<Evenement> findByClub(int clubId) {
         List<Evenement> evenements = new ArrayList<>();
         String sql = "SELECT * FROM evenements WHERE club_id = ? ORDER BY date_evenement ASC";
