@@ -17,6 +17,7 @@
 /home/legion/DEV/Prepa/2eme/clubManagement/src/servlet/EventRegistrationServlet.java
 /home/legion/DEV/Prepa/2eme/clubManagement/src/servlet/AssignResponsableServlet.java
 /home/legion/DEV/Prepa/2eme/clubManagement/src/servlet/EventCreateServlet.java
+/home/legion/DEV/Prepa/2eme/clubManagement/src/servlet/EventDetailServlet.java
 /home/legion/DEV/Prepa/2eme/clubManagement/src/model/Club.java
 /home/legion/DEV/Prepa/2eme/clubManagement/src/servlet/UserListServlet.java
 /home/legion/DEV/Prepa/2eme/clubManagement/src/dao/InscriptionEvenementDAO.java

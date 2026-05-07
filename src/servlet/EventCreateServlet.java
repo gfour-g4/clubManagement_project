@@ -21,7 +21,7 @@ public class EventCreateServlet extends BaseServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         utf8(request, response);
-        if (!requireRole(request, response, "ADMIN", "RESPONSABLE_CLUB")) {
+        if (!requireRole(request, response, "ADMIN", "RESPONSABLE")) {
             return;
         }
         request.setAttribute("clubs", getAllowedClubs(request));
@@ -31,12 +31,12 @@ public class EventCreateServlet extends BaseServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         utf8(request, response);
-        if (!requireRole(request, response, "ADMIN", "RESPONSABLE_CLUB")) {
+        if (!requireRole(request, response, "ADMIN", "RESPONSABLE")) {
             return;
         }
         Utilisateur currentUser = getCurrentUser(request);
         int clubId = Integer.parseInt(request.getParameter("clubId"));
-        if ("RESPONSABLE_CLUB".equals(currentUser.getRole()) && !clubDAO.isResponsableOfClub(currentUser.getId(), clubId)) {
+        if ("RESPONSABLE".equals(currentUser.getRole()) && !clubDAO.isResponsableOfClub(currentUser.getId(), clubId)) {
             request.setAttribute("error", "Vous ne pouvez creer un evenement que pour votre club.");
             request.setAttribute("clubs", getAllowedClubs(request));
             request.getRequestDispatcher("/jsp/createEvent.jsp").forward(request, response);

@@ -1,6 +1,7 @@
 servlet/LogoutServlet.class
 servlet/ClubCreateServlet.class
 servlet/UserListServlet.class
+servlet/EventDetailServlet.class
 dao/ClubDAO.class
 servlet/DashboardServlet.class
 servlet/EventListServlet.class

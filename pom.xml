@@ -51,6 +51,22 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.4.56.v20240826</version>
+                <configuration>
+                    <httpConnector>
+                        <port>8081</port>
+                    </httpConnector>
+                    <webApp>
+                        <contextPath>/clubManagement</contextPath>
+                        <resourceBases>
+                            <resourceBase>${project.basedir}/web</resourceBase>
+                        </resourceBases>
+                    </webApp>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

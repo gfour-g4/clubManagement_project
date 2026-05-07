@@ -1,5 +1,6 @@
 package dao;
 
+import model.Evenement;
 import model.InscriptionEvenement;
 import util.DBConnection;
 
@@ -72,5 +73,73 @@ public class InscriptionEvenementDAO {
             throw new RuntimeException("Erreur liste inscriptions evenement", e);
         }
         return inscriptions;
+    }
+
+    public List<Evenement> findRegisteredEventsByUser(int utilisateurId) {
+        List<Evenement> events = new ArrayList<>();
+        String sql = "SELECT e.* FROM evenements e " +
+                "JOIN inscriptions_evenements ie ON ie.evenement_id = e.id " +
+                "WHERE ie.utilisateur_id = ? AND ie.statut = 'INSCRIT' " +
+                "ORDER BY e.date_evenement ASC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, utilisateurId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Evenement e = new Evenement();
+                    e.setId(rs.getInt("id"));
+                    e.setClubId(rs.getInt("club_id"));
+                    e.setTitre(rs.getString("titre"));
+                    e.setDescription(rs.getString("description"));
+                    e.setDateEvenement(rs.getTimestamp("date_evenement"));
+                    e.setLieu(rs.getString("lieu"));
+                    e.setDateCreation(rs.getTimestamp("date_creation"));
+                    events.add(e);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur liste evenements inscrits utilisateur", e);
+        }
+        return events;
+    }
+
+    public boolean isRegistered(int evenementId, int utilisateurId) {
+        String sql = "SELECT 1 FROM inscriptions_evenements WHERE evenement_id = ? AND utilisateur_id = ? AND statut = 'INSCRIT'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, evenementId);
+            ps.setInt(2, utilisateurId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur verification inscription evenement", e);
+        }
+    }
+
+    public List<model.Utilisateur> findRegisteredUsersByEvenement(int evenementId) {
+        List<model.Utilisateur> users = new ArrayList<>();
+        String sql = "SELECT u.* FROM utilisateurs u " +
+                "JOIN inscriptions_evenements ie ON ie.utilisateur_id = u.id " +
+                "WHERE ie.evenement_id = ? AND ie.statut = 'INSCRIT' " +
+                "ORDER BY u.nom_complet";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, evenementId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    model.Utilisateur u = new model.Utilisateur();
+                    u.setId(rs.getInt("id"));
+                    u.setNomComplet(rs.getString("nom_complet"));
+                    u.setEmail(rs.getString("email"));
+                    u.setRole(rs.getString("role"));
+                    u.setDateCreation(rs.getTimestamp("date_creation"));
+                    users.add(u);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur liste utilisateurs inscrits evenement", e);
+        }
+        return users;
     }
 }

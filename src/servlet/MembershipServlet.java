@@ -28,7 +28,7 @@ public class MembershipServlet extends BaseServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         utf8(request, response);
-        if (!requireRole(request, response, "ETUDIANT")) {
+        if (!requireRole(request, response, "MEMBRE", "ETUDIANT")) {
             return;
         }
         Utilisateur user = getCurrentUser(request);

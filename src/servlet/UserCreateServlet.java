@@ -61,7 +61,7 @@ public class UserCreateServlet extends BaseServlet {
     }
 
     private List<String> allowedRoles() {
-        return Arrays.asList("ETUDIANT", "ADMIN", "RESPONSABLE_CLUB");
+        return Arrays.asList("MEMBRE", "ADMIN", "RESPONSABLE");
     }
 
     private boolean isBlank(String value) {

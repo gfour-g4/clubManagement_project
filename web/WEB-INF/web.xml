@@ -136,4 +136,15 @@
         <url-pattern>/events/register</url-pattern>
     </servlet-mapping>
 
+
+
+    <servlet>
+        <servlet-name>EventDetailServlet</servlet-name>
+        <servlet-class>servlet.EventDetailServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EventDetailServlet</servlet-name>
+        <url-pattern>/events/view</url-pattern>
+    </servlet-mapping>
+
 </web-app>

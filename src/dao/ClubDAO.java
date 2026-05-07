@@ -179,4 +179,28 @@ public class ClubDAO {
         }
         return responsablesByClub;
     }
+
+    public List<Club> findByMemberUserId(int utilisateurId) {
+        List<Club> clubs = new ArrayList<>();
+        String sql = "SELECT c.* FROM clubs c " +
+                "JOIN adhesions a ON a.club_id = c.id " +
+                "WHERE a.utilisateur_id = ? AND a.statut = 'ACTIF' ORDER BY c.nom";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, utilisateurId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Club c = new Club();
+                    c.setId(rs.getInt("id"));
+                    c.setNom(rs.getString("nom"));
+                    c.setDescription(rs.getString("description"));
+                    c.setDateCreation(rs.getTimestamp("date_creation"));
+                    clubs.add(c);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur liste clubs membre", e);
+        }
+        return clubs;
+    }
 }

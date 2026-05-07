@@ -56,7 +56,7 @@ public class ClubDetailServlet extends BaseServlet {
         }
 
         Map<Integer, String> responsablesByClub = clubDAO.findResponsableNamesByClub();
-        List<Utilisateur> responsables = utilisateurDAO.findByRole("RESPONSABLE_CLUB");
+        List<Utilisateur> responsables = utilisateurDAO.findByRole("RESPONSABLE");
 
         request.setAttribute("club", club);
         request.setAttribute("activeTab", tab);

@@ -73,6 +73,65 @@ public class EvenementDAO {
         return evenements;
     }
 
+    public List<Evenement> findUpcomingByClubIds(List<Integer> clubIds) {
+        List<Evenement> evenements = new ArrayList<>();
+        if (clubIds.isEmpty()) {
+            return evenements;
+        }
+        String placeholders = String.join(",", java.util.Collections.nCopies(clubIds.size(), "?"));
+        String sql = "SELECT * FROM evenements WHERE club_id IN (" + placeholders + ") AND date_evenement >= NOW() ORDER BY date_evenement ASC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (int i = 0; i < clubIds.size(); i++) {
+                ps.setInt(i + 1, clubIds.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    evenements.add(map(rs));
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur liste evenements a venir par clubs", e);
+        }
+        return evenements;
+    }
+
+    public List<Evenement> findUpcomingByUserClubs(int utilisateurId) {
+        List<Evenement> evenements = new ArrayList<>();
+        String sql = "SELECT e.* FROM evenements e " +
+                "JOIN adhesions a ON a.club_id = e.club_id " +
+                "WHERE a.utilisateur_id = ? AND a.statut = 'ACTIF' AND e.date_evenement >= NOW() " +
+                "ORDER BY e.date_evenement ASC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, utilisateurId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    evenements.add(map(rs));
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur liste evenements a venir pour utilisateur", e);
+        }
+        return evenements;
+    }
+
+    public Evenement findById(int id) {
+        String sql = "SELECT * FROM evenements WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return map(rs);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur recherche evenement par id", e);
+        }
+        return null;
+    }
+
     private Evenement map(ResultSet rs) throws Exception {
         Evenement e = new Evenement();
         e.setId(rs.getInt("id"));
