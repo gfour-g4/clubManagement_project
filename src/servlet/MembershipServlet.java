@@ -2,6 +2,7 @@ package servlet;
 
 import dao.AdhesionDAO;
 import dao.ClubDAO;
+import dao.ClubMembershipRequestDAO;
 import model.Utilisateur;
 
 import javax.servlet.ServletException;
@@ -12,6 +13,7 @@ import java.io.IOException;
 public class MembershipServlet extends BaseServlet {
     private final AdhesionDAO adhesionDAO = new AdhesionDAO();
     private final ClubDAO clubDAO = new ClubDAO();
+    private final ClubMembershipRequestDAO clubMembershipRequestDAO = new ClubMembershipRequestDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -39,8 +41,8 @@ public class MembershipServlet extends BaseServlet {
                 ? request.getContextPath() + "/clubs/view?id=" + redirectClubId + "&tab=info&info="
                 : request.getContextPath() + "/clubs?info=";
         if ("join".equals(action)) {
-            adhesionDAO.joinClub(user.getId(), clubId);
-            response.sendRedirect(redirectTo + "Adhesion+enregistree.");
+            String info = clubMembershipRequestDAO.requestJoinClub(user.getId(), clubId);
+            response.sendRedirect(redirectTo + info);
         } else if ("leave".equals(action)) {
             adhesionDAO.leaveClub(user.getId(), clubId);
             response.sendRedirect(redirectTo + "Vous+avez+quitte+le+club.");

@@ -147,4 +147,22 @@
         <url-pattern>/events/view</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>MembershipRequestDecisionServlet</servlet-name>
+        <servlet-class>servlet.MembershipRequestDecisionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MembershipRequestDecisionServlet</servlet-name>
+        <url-pattern>/membership/requests/decision</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>EventRequestDecisionServlet</servlet-name>
+        <servlet-class>servlet.EventRequestDecisionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EventRequestDecisionServlet</servlet-name>
+        <url-pattern>/events/requests/decision</url-pattern>
+    </servlet-mapping>
+
 </web-app>

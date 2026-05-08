@@ -2,8 +2,10 @@ package servlet;
 
 import dao.ClubDAO;
 import dao.EvenementDAO;
+import dao.NotificationDAO;
 import model.Club;
 import model.Evenement;
+import model.Notification;
 import model.Utilisateur;
 
 import javax.servlet.ServletException;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 public class DashboardServlet extends BaseServlet {
     private final ClubDAO clubDAO = new ClubDAO();
     private final EvenementDAO evenementDAO = new EvenementDAO();
+    private final NotificationDAO notificationDAO = new NotificationDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -26,6 +29,10 @@ public class DashboardServlet extends BaseServlet {
         }
         Utilisateur user = (Utilisateur) request.getSession().getAttribute("user");
         String role = user.getRole();
+
+        List<Notification> notifications = notificationDAO.findByUtilisateur(user.getId());
+        request.setAttribute("notifications", notifications);
+        request.setAttribute("unreadCount", notificationDAO.countUnread(user.getId()));
 
         if ("ADMIN".equals(role)) {
             request.setAttribute("statsMembres", clubDAO.countMembersPerClub());

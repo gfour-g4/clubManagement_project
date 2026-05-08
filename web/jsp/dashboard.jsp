@@ -1,4 +1,4 @@
-<%@ page import="model.Utilisateur,java.util.Map,java.util.List,model.Evenement,model.Club" %>
+<%@ page import="model.Utilisateur,java.util.Map,java.util.List,model.Evenement,model.Club,model.Notification" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
     Utilisateur user = (Utilisateur) session.getAttribute("user");
@@ -33,6 +33,32 @@
     <div class="main-content">
         <div class="page-header">
             <h2>Bienvenue <%= user.getNomComplet() %> (<%= role %>)</h2>
+        </div>
+
+        <%
+            List<Notification> notifications = (List<Notification>) request.getAttribute("notifications");
+            Integer unreadCount = (Integer) request.getAttribute("unreadCount");
+        %>
+        <div class="card">
+            <h3>Mes notifications</h3>
+            <p style="color: var(--text-muted);">Non lues: <%= unreadCount != null ? unreadCount : 0 %></p>
+            <% if (notifications == null || notifications.isEmpty()) { %>
+                <p style="color: var(--text-muted);">Aucune notification.</p>
+            <% } else { %>
+                <ul style="margin: 0; padding-left: 18px;">
+                    <% for (Notification n : notifications) { %>
+                        <li style="margin: 8px 0;">
+                            <% if (!n.isEstLu()) { %>
+                                <strong>Nouveau:</strong>
+                            <% } %>
+                            <%= n.getMessage() %>
+                            <div style="font-size: 12px; color: var(--text-muted);">
+                                <%= n.getDateCreation() %>
+                            </div>
+                        </li>
+                    <% } %>
+                </ul>
+            <% } %>
         </div>
 
         <% if ("ADMIN".equals(role)) { %>

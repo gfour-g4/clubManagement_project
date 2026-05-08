@@ -5,6 +5,7 @@
     Evenement event = (Evenement) request.getAttribute("event");
     Club club = (Club) request.getAttribute("club");
     Boolean isRegistered = (Boolean) request.getAttribute("isRegistered");
+    Boolean isPendingRegistration = (Boolean) request.getAttribute("isPendingRegistration");
     Boolean canViewMembers = (Boolean) request.getAttribute("canViewMembers");
     List<Utilisateur> registeredUsers = (List<Utilisateur>) request.getAttribute("registeredUsers");
     String info = request.getParameter("info");
@@ -27,6 +28,19 @@
         .status-inscrit {
             background: #ecfdf5;
             color: #059669;
+        }
+
+        .status-attente {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .pending-btn {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            padding: 6px 12px;
+            border-radius: 6px;
         }
     </style>
 </head>
@@ -76,26 +90,30 @@
                     <p style="margin: 12px 0;"><strong>Statut d'inscription:</strong>
                         <% if (Boolean.TRUE.equals(isRegistered)) { %>
                             <span class="status-badge status-inscrit">Inscrit</span>
+                        <% } else if (Boolean.TRUE.equals(isPendingRegistration)) { %>
+                            <span class="status-badge status-attente">En attente</span>
                         <% } else { %>
                             <span class="muted">Non inscrit</span>
                         <% } %>
                     </p>
                     <div class="actions" style="margin-top: 16px;">
-                        <% if (!Boolean.TRUE.equals(isRegistered)) { %>
-                            <form method="post" action="<%= request.getContextPath() %>/events/register" class="inline-form">
-                                <input type="hidden" name="eventId" value="<%= event.getId() %>">
-                                <input type="hidden" name="action" value="register">
-                                <input type="hidden" name="redirectUrl" value="/events/view">
-                                <input type="hidden" name="eventIdParam" value="id">
-                                <button type="submit">S'inscrire</button>
-                            </form>
-                        <% } else { %>
+                        <% if (Boolean.TRUE.equals(isRegistered)) { %>
                             <form method="post" action="<%= request.getContextPath() %>/events/register" class="inline-form">
                                 <input type="hidden" name="eventId" value="<%= event.getId() %>">
                                 <input type="hidden" name="action" value="cancel">
                                 <input type="hidden" name="redirectUrl" value="/events/view">
                                 <input type="hidden" name="eventIdParam" value="id">
                                 <button type="submit" class="danger-btn">Annuler l'inscription</button>
+                            </form>
+                        <% } else if (Boolean.TRUE.equals(isPendingRegistration)) { %>
+                            <button type="button" class="pending-btn" disabled>Demande en attente</button>
+                        <% } else { %>
+                            <form method="post" action="<%= request.getContextPath() %>/events/register" class="inline-form">
+                                <input type="hidden" name="eventId" value="<%= event.getId() %>">
+                                <input type="hidden" name="action" value="register">
+                                <input type="hidden" name="redirectUrl" value="/events/view">
+                                <input type="hidden" name="eventIdParam" value="id">
+                                <button type="submit">S'inscrire</button>
                             </form>
                         <% } %>
                     </div>

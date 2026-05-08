@@ -1,6 +1,7 @@
 package servlet;
 
 import dao.InscriptionEvenementDAO;
+import dao.EventRegistrationRequestDAO;
 import model.Utilisateur;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import java.io.IOException;
 
 public class EventRegistrationServlet extends BaseServlet {
     private final InscriptionEvenementDAO inscriptionDAO = new InscriptionEvenementDAO();
+    private final EventRegistrationRequestDAO eventRegistrationRequestDAO = new EventRegistrationRequestDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -26,8 +28,7 @@ public class EventRegistrationServlet extends BaseServlet {
         }
         String info = "";
         if ("register".equals(action)) {
-            inscriptionDAO.register(eventId, user.getId());
-            info = "Inscription+effectuee.";
+            info = eventRegistrationRequestDAO.requestRegister(eventId, user.getId());
         } else if ("cancel".equals(action)) {
             inscriptionDAO.cancel(eventId, user.getId());
             info = "Inscription+annulee.";

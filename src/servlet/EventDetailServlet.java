@@ -2,6 +2,7 @@ package servlet;
 
 import dao.ClubDAO;
 import dao.EvenementDAO;
+import dao.EventRegistrationRequestDAO;
 import dao.InscriptionEvenementDAO;
 import model.Club;
 import model.Evenement;
@@ -17,6 +18,7 @@ public class EventDetailServlet extends BaseServlet {
     private final EvenementDAO evenementDAO = new EvenementDAO();
     private final ClubDAO clubDAO = new ClubDAO();
     private final InscriptionEvenementDAO inscriptionDAO = new InscriptionEvenementDAO();
+    private final EventRegistrationRequestDAO eventRegistrationRequestDAO = new EventRegistrationRequestDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -38,6 +40,10 @@ public class EventDetailServlet extends BaseServlet {
         Club club = clubDAO.findById(event.getClubId());
         Utilisateur currentUser = getCurrentUser(request);
         boolean isRegistered = inscriptionDAO.isRegistered(eventId, currentUser.getId());
+        boolean isPendingRegistration = false;
+        if ("MEMBRE".equals(currentUser.getRole()) || "ETUDIANT".equals(currentUser.getRole())) {
+            isPendingRegistration = eventRegistrationRequestDAO.isPendingRegistration(eventId, currentUser.getId());
+        }
         
         boolean canViewMembers = false;
         List<Utilisateur> registeredUsers = null;
@@ -54,6 +60,7 @@ public class EventDetailServlet extends BaseServlet {
         request.setAttribute("event", event);
         request.setAttribute("club", club);
         request.setAttribute("isRegistered", isRegistered);
+        request.setAttribute("isPendingRegistration", isPendingRegistration);
         request.setAttribute("canViewMembers", canViewMembers);
         request.setAttribute("registeredUsers", registeredUsers);
         request.getRequestDispatcher("/jsp/eventDetail.jsp").forward(request, response);

@@ -3,6 +3,7 @@ package servlet;
 import dao.AdhesionDAO;
 import dao.ClubDAO;
 import dao.EvenementDAO;
+import dao.EventRegistrationRequestDAO;
 import dao.InscriptionEvenementDAO;
 import model.Adhesion;
 import model.Club;
@@ -15,8 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class EventListServlet extends BaseServlet {
@@ -24,6 +27,7 @@ public class EventListServlet extends BaseServlet {
     private final ClubDAO clubDAO = new ClubDAO();
     private final InscriptionEvenementDAO inscriptionDAO = new InscriptionEvenementDAO();
     private final AdhesionDAO adhesionDAO = new AdhesionDAO();
+    private final EventRegistrationRequestDAO eventRegistrationRequestDAO = new EventRegistrationRequestDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -85,6 +89,13 @@ public class EventListServlet extends BaseServlet {
         request.setAttribute("selectedClubId", selectedClubId);
         request.setAttribute("clubs", allClubs);
         request.setAttribute("clubNamesById", buildClubNamesMap(allClubs));
+
+        if ("MEMBRE".equals(currentUser.getRole()) || "ETUDIANT".equals(currentUser.getRole())) {
+            Set<Integer> pendingEventIds = eventRegistrationRequestDAO.findPendingEventIdsByUtilisateur(currentUser.getId());
+            request.setAttribute("pendingEventIds", pendingEventIds);
+        } else {
+            request.setAttribute("pendingEventIds", new HashSet<Integer>());
+        }
 
         Map<Integer, Boolean> registrationStatus = new HashMap<>();
         

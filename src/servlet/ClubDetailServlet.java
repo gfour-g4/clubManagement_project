@@ -2,9 +2,13 @@ package servlet;
 
 import dao.AdhesionDAO;
 import dao.ClubDAO;
+import dao.ClubMembershipRequestDAO;
 import dao.EvenementDAO;
+import dao.EventRegistrationRequestDAO;
 import dao.UtilisateurDAO;
 import model.Club;
+import model.ClubMembershipRequest;
+import model.EventRegistrationRequest;
 import model.Utilisateur;
 
 import javax.servlet.ServletException;
@@ -19,6 +23,8 @@ public class ClubDetailServlet extends BaseServlet {
     private final EvenementDAO evenementDAO = new EvenementDAO();
     private final AdhesionDAO adhesionDAO = new AdhesionDAO();
     private final UtilisateurDAO utilisateurDAO = new UtilisateurDAO();
+    private final ClubMembershipRequestDAO clubMembershipRequestDAO = new ClubMembershipRequestDAO();
+    private final EventRegistrationRequestDAO eventRegistrationRequestDAO = new EventRegistrationRequestDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -55,6 +61,12 @@ public class ClubDetailServlet extends BaseServlet {
             tab = "info";
         }
 
+        if ("requests".equals(tab)) {
+            if (!"RESPONSABLE".equals(currentUser.getRole()) || !clubDAO.isResponsableOfClub(currentUser.getId(), clubId)) {
+                tab = "info";
+            }
+        }
+
         Map<Integer, String> responsablesByClub = clubDAO.findResponsableNamesByClub();
         List<Utilisateur> responsables = utilisateurDAO.findByRole("RESPONSABLE");
 
@@ -65,6 +77,17 @@ public class ClubDetailServlet extends BaseServlet {
         request.setAttribute("responsableName", responsablesByClub.get(clubId));
         request.setAttribute("responsables", responsables);
         request.setAttribute("isStudentMember", adhesionDAO.isActiveMember(currentUser.getId(), clubId));
+        request.setAttribute("hasPendingMembershipRequest",
+                clubMembershipRequestDAO.hasPendingRequest(currentUser.getId(), clubId));
+
+        boolean isResponsableOfClub = clubDAO.isResponsableOfClub(currentUser.getId(), clubId);
+        request.setAttribute("isResponsableOfClub", isResponsableOfClub);
+        if ("RESPONSABLE".equals(currentUser.getRole()) && isResponsableOfClub) {
+            request.setAttribute("pendingMembershipRequests",
+                    clubMembershipRequestDAO.findPendingByResponsableAndClub(currentUser.getId(), clubId));
+            request.setAttribute("pendingEventRequests",
+                    eventRegistrationRequestDAO.findPendingByResponsableAndClub(currentUser.getId(), clubId));
+        }
         request.getRequestDispatcher("/jsp/clubDetails.jsp").forward(request, response);
     }
 }

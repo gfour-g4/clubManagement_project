@@ -40,7 +40,7 @@ public class AdhesionDAO {
     }
 
     public void leaveClub(int utilisateurId, int clubId) {
-        String sql = "UPDATE adhesions SET statut = 'QUITTE' WHERE utilisateur_id = ? AND club_id = ?";
+        String sql = "UPDATE adhesions SET statut = 'INACTIF' WHERE utilisateur_id = ? AND club_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, utilisateurId);

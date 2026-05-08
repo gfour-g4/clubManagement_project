@@ -1,0 +1,68 @@
+@startuml
+title Club Management - Navigation Diagram
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+rectangle "Public Entry" {
+  [index.jsp]
+  [Login Page\n/login]
+}
+
+rectangle "Core Pages" {
+  [Dashboard\n/dashboard]
+  [Clubs List\n/clubs]
+  [Club Details\n/clubs/view?id]
+  [Events List\n/events]
+  [Event Details\n/events/view?id]
+}
+
+rectangle "Admin Pages" {
+  [Users List\n/users]
+  [Create User\n/users/create]
+  [Create Club\n/clubs/create]
+}
+
+rectangle "Create Flows" {
+  [Create Event\n/events/create]
+}
+
+[index.jsp] --> [Login Page\n/login] : redirect
+[Login Page\n/login] --> [Dashboard\n/dashboard] : success
+
+[Dashboard\n/dashboard] --> [Clubs List\n/clubs]
+[Dashboard\n/dashboard] --> [Events List\n/events]
+[Dashboard\n/dashboard] --> [Users List\n/users] : ADMIN only
+[Dashboard\n/dashboard] --> [Event Details\n/events/view?id]
+[Dashboard\n/dashboard] --> [Club Details\n/clubs/view?id]
+
+[Clubs List\n/clubs] --> [Club Details\n/clubs/view?id]
+[Clubs List\n/clubs] --> [Create Club\n/clubs/create] : ADMIN only
+
+[Club Details\n/clubs/view?id] --> [Event Details\n/events/view?id]
+[Club Details\n/clubs/view?id] --> [Club Details\n/clubs/view?id] : tabs switch
+
+[Events List\n/events] --> [Event Details\n/events/view?id]
+[Events List\n/events] --> [Create Event\n/events/create] : ADMIN/RESPONSABLE
+
+[Event Details\n/events/view?id] --> [Club Details\n/clubs/view?id]
+
+[Users List\n/users] --> [Create User\n/users/create]
+[Users List\n/users] --> [Users List\n/users] : delete user (refresh)
+
+[Dashboard\n/dashboard] --> [Login Page\n/login] : logout
+[Clubs List\n/clubs] --> [Login Page\n/login] : logout
+[Club Details\n/clubs/view?id] --> [Login Page\n/login] : logout
+[Events List\n/events] --> [Login Page\n/login] : logout
+[Event Details\n/events/view?id] --> [Login Page\n/login] : logout
+[Users List\n/users] --> [Login Page\n/login] : logout
+
+note bottom of [Create Club\n/clubs/create]
+  Reached from clubs list and returns to list after save.
+end note
+
+note bottom of [Create Event\n/events/create]
+  Reached from events list and returns to list/details after save.
+end note
+
+@enduml

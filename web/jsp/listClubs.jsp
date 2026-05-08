@@ -1,10 +1,11 @@
-<%@ page import="java.util.List,java.util.Map,model.Club,model.Utilisateur" %>
+<%@ page import="java.util.List,java.util.Map,java.util.Set,model.Club,model.Utilisateur" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
     Utilisateur user = (Utilisateur) session.getAttribute("user");
     List<Club> clubs = (List<Club>) request.getAttribute("clubs");
     Map<Integer, String> clubResponsables = (Map<Integer, String>) request.getAttribute("clubResponsables");
     Map<Integer, Boolean> membershipStatus = (Map<Integer, Boolean>) request.getAttribute("membershipStatus");
+    Set<Integer> pendingMembershipClubIds = (Set<Integer>) request.getAttribute("pendingMembershipClubIds");
     String info = request.getParameter("info");
 %>
 <!DOCTYPE html>
@@ -64,6 +65,16 @@
             background: #ecfdf5;
             color: #059669;
         }
+
+        .pending-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
     </style>
 </head>
 <body>
@@ -114,6 +125,8 @@
                                     <% if ("MEMBRE".equals(user.getRole()) || "ETUDIANT".equals(user.getRole())) { %>
                                         <% if (Boolean.TRUE.equals(membershipStatus.get(c.getId()))) { %>
                                             <span class="member-badge">Membre</span>
+                                        <% } else if (pendingMembershipClubIds != null && pendingMembershipClubIds.contains(c.getId())) { %>
+                                            <span class="pending-badge">En attente</span>
                                         <% } %>
                                     <% } %>
                                 </div>

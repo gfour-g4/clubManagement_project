@@ -1,0 +1,68 @@
+@startuml
+title Club Management - Use Case Diagram
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Utilisateur" as User
+actor "Admin" as Admin
+actor "Responsable de club" as Responsable
+actor "Membre/Etudiant" as Membre
+
+User <|-- Admin
+User <|-- Responsable
+User <|-- Membre
+
+rectangle "Systeme Club Management" {
+  usecase "Se connecter" as UC_Login
+  usecase "Se deconnecter" as UC_Logout
+  usecase "Voir dashboard" as UC_Dashboard
+  usecase "Consulter clubs" as UC_Clubs
+  usecase "Consulter details club" as UC_ClubDetails
+  usecase "Consulter evenements" as UC_Events
+  usecase "Consulter details evenement" as UC_EventDetails
+
+  usecase "Creer club" as UC_CreateClub
+  usecase "Assigner responsable\nau club" as UC_AssignResponsable
+  usecase "Gerer utilisateurs\n(lister, creer, supprimer)" as UC_ManageUsers
+
+  usecase "Creer evenement" as UC_CreateEvent
+  usecase "Filtrer evenements\npar club" as UC_FilterEvents
+  usecase "Voir membres inscrits\naux evenements" as UC_ViewRegistered
+
+  usecase "Adherer a un club" as UC_JoinClub
+  usecase "Quitter un club" as UC_LeaveClub
+  usecase "S'inscrire a un evenement" as UC_RegisterEvent
+  usecase "Annuler inscription\na un evenement" as UC_CancelEvent
+}
+
+User --> UC_Login
+User --> UC_Logout
+User --> UC_Dashboard
+User --> UC_Clubs
+User --> UC_ClubDetails
+User --> UC_Events
+User --> UC_EventDetails
+
+Admin --> UC_CreateClub
+Admin --> UC_AssignResponsable
+Admin --> UC_ManageUsers
+Admin --> UC_CreateEvent
+Admin --> UC_FilterEvents
+Admin --> UC_ViewRegistered
+
+Responsable --> UC_CreateEvent
+Responsable --> UC_FilterEvents
+Responsable --> UC_ViewRegistered
+
+Membre --> UC_JoinClub
+Membre --> UC_LeaveClub
+Membre --> UC_RegisterEvent
+Membre --> UC_CancelEvent
+
+UC_ClubDetails ..> UC_JoinClub : <<extend>>
+UC_ClubDetails ..> UC_LeaveClub : <<extend>>
+UC_EventDetails ..> UC_RegisterEvent : <<extend>>
+UC_EventDetails ..> UC_CancelEvent : <<extend>>
+UC_Events ..> UC_FilterEvents : <<extend>>
+@enduml

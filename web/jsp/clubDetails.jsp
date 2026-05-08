@@ -1,4 +1,4 @@
-<%@ page import="java.util.List,model.Club,model.Evenement,model.Utilisateur" %>
+<%@ page import="java.util.List,model.Club,model.Evenement,model.Utilisateur,model.ClubMembershipRequest,model.EventRegistrationRequest" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
     Utilisateur user = (Utilisateur) session.getAttribute("user");
@@ -9,6 +9,10 @@
     String responsableName = (String) request.getAttribute("responsableName");
     String activeTab = (String) request.getAttribute("activeTab");
     Boolean isStudentMember = (Boolean) request.getAttribute("isStudentMember");
+    Boolean hasPendingMembershipRequest = (Boolean) request.getAttribute("hasPendingMembershipRequest");
+    Boolean isResponsableOfClub = (Boolean) request.getAttribute("isResponsableOfClub");
+    List<ClubMembershipRequest> pendingMembershipRequests = (List<ClubMembershipRequest>) request.getAttribute("pendingMembershipRequests");
+    List<EventRegistrationRequest> pendingEventRequests = (List<EventRegistrationRequest>) request.getAttribute("pendingEventRequests");
     String info = request.getParameter("info");
 %>
 <!DOCTYPE html>
@@ -75,6 +79,12 @@
             font-size: 13px;
             color: var(--text-muted);
         }
+
+        .pending-btn {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
     </style>
 </head>
 <body>
@@ -120,6 +130,8 @@
                             <input type="hidden" name="redirectClubId" value="<%= club.getId() %>">
                             <button type="submit" class="danger-btn">Quitter ce club</button>
                         </form>
+                        <% } else if (Boolean.TRUE.equals(hasPendingMembershipRequest)) { %>
+                            <button type="button" class="pending-btn" disabled>Demande en attente</button>
                         <% } else { %>
                         <form method="post" action="<%= request.getContextPath() %>/membership" class="inline-form">
                             <input type="hidden" name="clubId" value="<%= club.getId() %>">
@@ -138,6 +150,9 @@
                 <a class="<%= "info".equals(activeTab) ? "tab active" : "tab" %>" href="<%= request.getContextPath() %>/clubs/view?id=<%= club.getId() %>&tab=info">ℹ️ Info</a>
                 <a class="<%= "events".equals(activeTab) ? "tab active" : "tab" %>" href="<%= request.getContextPath() %>/clubs/view?id=<%= club.getId() %>&tab=events">📅 Événements</a>
                 <a class="<%= "members".equals(activeTab) ? "tab active" : "tab" %>" href="<%= request.getContextPath() %>/clubs/view?id=<%= club.getId() %>&tab=members">👥 Membres</a>
+                <% if ("RESPONSABLE".equals(user.getRole()) && Boolean.TRUE.equals(isResponsableOfClub)) { %>
+                    <a class="<%= "requests".equals(activeTab) ? "tab active" : "tab" %>" href="<%= request.getContextPath() %>/clubs/view?id=<%= club.getId() %>&tab=requests">📝 Demandes</a>
+                <% } %>
                 <% if ("ADMIN".equals(user.getRole())) { %>
                     <a class="<%= "assign".equals(activeTab) ? "tab active" : "tab" %>" href="<%= request.getContextPath() %>/clubs/view?id=<%= club.getId() %>&tab=assign">👤 Assigner responsable</a>
                 <% } %>
@@ -193,6 +208,86 @@
                             </div>
                         <% } %>
                     </div>
+                <% } %>
+            </div>
+            <% } %>
+
+            <% if ("requests".equals(activeTab) && "RESPONSABLE".equals(user.getRole()) && Boolean.TRUE.equals(isResponsableOfClub)) { %>
+            <div style="margin-top: 20px;">
+                <h3 style="margin: 0 0 16px 0;">Demandes en attente</h3>
+
+                <h4 style="margin: 18px 0 10px 0;">1) Adhésion au club</h4>
+                <% if (pendingMembershipRequests == null || pendingMembershipRequests.isEmpty()) { %>
+                    <p class="muted" style="text-align: center; padding: 20px 0;">Aucune demande d'adhésion en attente.</p>
+                <% } else { %>
+                    <table>
+                        <tr><th>Étudiant</th><th>Date</th><th>Action</th></tr>
+                        <% for (ClubMembershipRequest r : pendingMembershipRequests) { %>
+                            <tr>
+                                <td>
+                                    <strong><%= r.getUtilisateurNomComplet() %></strong><br/>
+                                    <span style="font-size: 13px; color: var(--text-muted);"><%= r.getUtilisateurEmail() %></span>
+                                </td>
+                                <td><%= r.getDateDemande() %></td>
+                                <td>
+                                    <div style="display: flex; flex-direction: column; gap: 8px; width: 140px;">
+                                        <form method="post" action="<%= request.getContextPath() %>/membership/requests/decision" class="inline-form">
+                                            <input type="hidden" name="requestId" value="<%= r.getId() %>">
+                                            <input type="hidden" name="decision" value="accept">
+                                            <input type="hidden" name="redirectClubId" value="<%= club.getId() %>">
+                                            <button type="submit" style="background: var(--primary); color: white;">Accepter</button>
+                                        </form>
+                                        <form method="post" action="<%= request.getContextPath() %>/membership/requests/decision" class="inline-form">
+                                            <input type="hidden" name="requestId" value="<%= r.getId() %>">
+                                            <input type="hidden" name="decision" value="reject">
+                                            <input type="hidden" name="redirectClubId" value="<%= club.getId() %>">
+                                            <button type="submit" class="danger-btn">Refuser</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </table>
+                <% } %>
+
+                <h4 style="margin: 18px 0 10px 0;">2) Inscription à un événement</h4>
+                <% if (pendingEventRequests == null || pendingEventRequests.isEmpty()) { %>
+                    <p class="muted" style="text-align: center; padding: 20px 0;">Aucune demande d'inscription en attente.</p>
+                <% } else { %>
+                    <table>
+                        <tr><th>Événement</th><th>Étudiant</th><th>Date</th><th>Action</th></tr>
+                        <% for (EventRegistrationRequest r : pendingEventRequests) { %>
+                            <tr>
+                                <td>
+                                    <strong><%= r.getEvenementTitre() %></strong><br/>
+                                    <span style="font-size: 13px; color: var(--text-muted);">
+                                        📅 <%= r.getEvenementDate() %> · 📍 <%= r.getEvenementLieu() %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong><%= r.getUtilisateurNomComplet() %></strong><br/>
+                                    <span style="font-size: 13px; color: var(--text-muted);"><%= r.getUtilisateurEmail() %></span>
+                                </td>
+                                <td><%= r.getDateDemande() %></td>
+                                <td>
+                                    <div style="display: flex; flex-direction: column; gap: 8px; width: 140px;">
+                                        <form method="post" action="<%= request.getContextPath() %>/events/requests/decision" class="inline-form">
+                                            <input type="hidden" name="requestId" value="<%= r.getId() %>">
+                                            <input type="hidden" name="decision" value="accept">
+                                            <input type="hidden" name="redirectClubId" value="<%= club.getId() %>">
+                                            <button type="submit" style="background: var(--primary); color: white;">Accepter</button>
+                                        </form>
+                                        <form method="post" action="<%= request.getContextPath() %>/events/requests/decision" class="inline-form">
+                                            <input type="hidden" name="requestId" value="<%= r.getId() %>">
+                                            <input type="hidden" name="decision" value="reject">
+                                            <input type="hidden" name="redirectClubId" value="<%= club.getId() %>">
+                                            <button type="submit" class="danger-btn">Refuser</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </table>
                 <% } %>
             </div>
             <% } %>
